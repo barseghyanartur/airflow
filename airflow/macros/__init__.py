@@ -1,10 +1,28 @@
-from __future__ import absolute_import
-from random import random
+# -*- coding: utf-8 -*-
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
 from datetime import datetime, timedelta
-import dateutil
-import time
-from . import hive
-import uuid
+import dateutil # noqa
+from random import random # noqa
+import time # noqa
+from . import hive # noqa
+import uuid # noqa
 
 
 def ds_add(ds, days):
@@ -48,8 +66,27 @@ def ds_format(ds, input_format, output_format):
     return datetime.strptime(ds, input_format).strftime(output_format)
 
 
-def integrate_plugins():
+def datetime_diff_for_humans(dt, since=None):
+    """
+    Return a human-readable/approximate difference between two datetimes, or
+    one and now.
+
+    :param dt: The datetime to display the diff for
+    :type dt: datetime
+    :param since: When to display the date from. If ``None`` then the diff is
+        between ``dt`` and now.
+    :type since: None or datetime
+    :rtype: str
+    """
+    import pendulum
+
+    return pendulum.instance(dt).diff_for_humans(since)
+
+
+def _integrate_plugins():
     """Integrate plugins to the context"""
-    from airflow.plugins_manager import macros as _macros
-    for _macro in _macros:
-        globals()[_macro.__name__] = _macro
+    import sys
+    from airflow.plugins_manager import macros_modules
+    for macros_module in macros_modules:
+        sys.modules[macros_module.__name__] = macros_module
+        globals()[macros_module._name] = macros_module

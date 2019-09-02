@@ -1,14 +1,39 @@
+{#
+ Licensed to the Apache Software Foundation (ASF) under one
+ or more contributor license agreements.  See the NOTICE file
+ distributed with this work for additional information
+ regarding copyright ownership.  The ASF licenses this file
+ to you under the Apache License, Version 2.0 (the
+ "License"); you may not use this file except in compliance
+ with the License.  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing,
+ software distributed under the License is distributed on an
+ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ KIND, either express or implied.  See the License for the
+ specific language governing permissions and limitations
+ under the License.
+#}
+
 {% extends "airflow/dag.html" %}
 {% block title %}Airflow - DAGs{% endblock %}
 
 {% block head_css %}
 {{ super() }}
 <link rel="stylesheet" type="text/css"
-    href="{{ url_for('static', filename='tree.css') }}">
-<link href="{{ admin_static.url(filename='vendor/bootstrap-daterangepicker/daterangepicker-bs2.css') }}" rel="stylesheet">
+    href="{{ url_for('static', filename='css/tree.css') }}">
+<link rel="stylesheet" type="text/css"
+    href="{{ url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.css')}}" >
+<link href="{{ url_for_asset('dataTables.bootstrap.min.css') }}" rel="stylesheet" type="text/css" >
+<link rel="stylesheet" type="text/css"
+      href="{{ url_for_asset('nv.d3.min.css') }}">
+<script src="{{ url_for_asset('d3.min.js') }}"></script>
+<script src="{{ url_for_asset('nv.d3.min.js') }}"></script>
 {% endblock %}
 
-{% block body %}
+{% block content %}
 {{ super() }}
 <div style="float: left" class="form-inline">
     <form method="get" style="float:left;">
@@ -21,54 +46,13 @@
         <input name="_csrf_token" type="hidden" value="{{ csrf_token() }}">
     </form>
 </div>
-<div style="clear: both;"></div>
+<div style="clear: both;">{{ chart |safe }}</div>
 <hr/>
 {% endblock %}
 
 {% block tail %}
     {{ super() }}
-    <script src="{{ url_for('static', filename='d3.v3.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='highcharts.js') }}"></script>
-    <script src="/ck/static/chartkick.js"></script>
-    <script>
-      // We blur task_ids in demo mode
-    $( document ).ready(function() {
-      if ("{{ demo_mode }}" == "True") {
-          d3.select("svg")
-            .append("filter")
-            .attr("id", "blur-effect-1")
-            .append("feGaussianBlur")
-            .attr("stdDeviation", 3);
-          d3.selectAll("g.highcharts-legend-item text").style("filter", "url(#blur-effect-1)");
-      }
-      $('#uncheck').click(function(){
-          chart = Highcharts.charts[0];
-          $(chart.series).each(function(){
-              this.setVisible(false, false);
-          });
-          chart.redraw();
-      });
-      $('#check').click(function(){
-          chart = Highcharts.charts[0];
-          $(chart.series).each(function(){
-              this.setVisible(true, false);
-          });
-          chart.redraw();
-      });
-    });
-    </script>
+    <div class="container"></div>
 
-    <div class="container">
-      {% line_chart data with height=height library=chart_options%}
-      <div class="text-center">
-        <button class="btn" id="uncheck">Hide all series</button>
-        <button class="btn" id="check">Show all series</button>
-      </div>
-    </div>
-
-    <script src="{{ url_for('static', filename='d3.v3.min.js') }}"></script>
-      <script src="{{ admin_static.url(
-        filename='vendor/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
-      <script src="{{ admin_static.url(filename='admin/js/form-1.0.0.js') }}"></script>
-    <script>
+    <script src="{{url_for('appbuilder.static',filename='datepicker/bootstrap-datepicker.js')}}"></script>
 {% endblock %}
