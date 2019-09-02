@@ -703,7 +703,7 @@ the main UI. For example:
 
 .. code:: python
 
-  #dags/subdag.py
+  # dags/subdag.py
   from airflow.models import DAG
   from airflow.operators.dummy_operator import DummyOperator
 
